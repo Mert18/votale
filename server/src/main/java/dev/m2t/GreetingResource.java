@@ -1,4 +1,4 @@
-package org.acme;
+package dev.m2t;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -11,6 +11,6 @@ public class GreetingResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
-        return "Hello from Quarkus REST";
+        return "Hello from Quarkus RESTie";
     }
 }

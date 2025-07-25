@@ -1,38 +1,55 @@
 package dev.m2t.resource;
 
 import dev.m2t.model.Sentence;
-import dev.m2t.service.SentenceService;
+import dev.m2t.model.Story;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.List;
-import java.util.Map;
 
 @Path("/sentences")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SentenceResource {
 
+
     @Inject
-    SentenceService sentenceService;
+    Mutiny.SessionFactory sf;
 
     @GET
-    public Uni<Map<String, Object>> getSentences(
-            @QueryParam("storyId") Long storyId,
-            @QueryParam("page") @DefaultValue("0") int page,
-            @QueryParam("size") @DefaultValue("10") int size) {
+    @Path("/{storyId}")
+    public Uni<List<Sentence>> getTopVotedSentencesByStoryId(@PathParam("storyId") Long storyId) {
+        return sf.withTransaction((s, t) ->
+                s.createQuery("""
+                                SELECT s FROM Sentence s WHERE s.id IN (
+                                    SELECT s2.id FROM Sentence s2 
+                                    WHERE s2.story.id = :storyId 
+                                    AND s2.votes = (
+                                        SELECT MAX(s3.votes) 
+                                        FROM Sentence s3 
+                                        WHERE s3.story.id = :storyId 
+                                        AND s3.order = s2.order
+                                    )
+                                ) ORDER BY s.order
+                                """, Sentence.class)
+                        .setParameter("storyId", storyId)
+                        .getResultList()
+        );
+    }
 
-        Uni<List<Sentence>> sentences = sentenceService.getSentences(storyId, page, size);
-        Uni<Long> total = sentenceService.countSentences(storyId);
-
-        return Uni.combine().all().unis(sentences, total).asTuple()
-                .map(tuple -> Map.of(
-                        "sentences", tuple.getItem1(),
-                        "total", tuple.getItem2(),
-                        "page", page,
-                        "size", size
-                ));
+    @POST
+    public Uni<Response> createSentence(Sentence sentence) {
+        return sf.withTransaction((s, t) ->
+            s.find(Story.class, sentence.story.id)
+                    .onItem().ifNull().failWith(new WebApplicationException("Story could not found.", Response.Status.NOT_FOUND))
+                    .chain(story -> {
+                        sentence.story = story;
+                        return s.persist(sentence);
+                    })
+        ).replaceWith(Response.ok(sentence).status(Response.Status.CREATED)::build);
     }
 }

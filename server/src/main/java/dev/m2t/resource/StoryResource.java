@@ -1,14 +1,16 @@
 package dev.m2t.resource;
 
-import dev.m2t.model.Story;
+import dev.m2t.model.dto.CreateStoryDto;
+import dev.m2t.model.dto.StoryStatsDto;
+import dev.m2t.service.StoryService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.hibernate.reactive.mutiny.Mutiny;
 
-
+import java.util.List;
+import java.util.Map;
 
 @Path("/stories")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,31 +18,39 @@ import org.hibernate.reactive.mutiny.Mutiny;
 public class StoryResource {
 
     @Inject
-    Mutiny.SessionFactory sf;
+    StoryService storyService;
 
     @GET
-    public Uni<Response> getStories() {
-        return sf.withTransaction((s, t) ->
-                s.createNativeQuery("""
-            SELECT 
-                st.id,
-                st.name,
-                st.lang,
-                COALESCE(COUNT(DISTINCT sen.sentence_order), 0) as sentence_count,
-                COALESCE(SUM(sen.votes), 0) as total_votes
-            FROM Story st
-            LEFT JOIN Sentence sen ON st.id = sen.story_id
-            GROUP BY st.id, st.name, st.lang
-            ORDER BY COALESCE(SUM(sen.votes), 0) DESC
-            """)
-                        .getResultList()
-        ).map(results -> Response.ok(results).build());
+    public Uni<List<StoryStatsDto>> getStories() {
+        return storyService.getAllStoriesWithStats();
     }
 
     @POST
-    public Uni<Response> createStory(Story story) {
-        return sf.withTransaction((s, t) -> s.persist(story))
-                .replaceWith(Response.ok(story).status(Response.Status.CREATED)::build);
+    public Uni<Response> createStory(CreateStoryDto createStoryDto) {
+        return storyService.createStory(createStoryDto)
+                .map(story -> Response.status(Response.Status.CREATED).entity(story).build())
+                .onFailure(IllegalArgumentException.class)
+                .recoverWithItem(throwable ->
+                        Response.status(Response.Status.BAD_REQUEST)
+                                .entity(Map.of("error", throwable.getMessage()))
+                                .build()
+                )
+                .onFailure().recoverWithItem(throwable ->
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                .entity(Map.of("error", "Failed to create story"))
+                                .build()
+                );
     }
 
+    @GET
+    @Path("/{id}")
+    public Uni<Response> getStoryById(@PathParam("id") Long id) {
+        return storyService.findStoryById(id)
+                .map(story -> Response.ok(story).build())
+                .onFailure().recoverWithItem(throwable ->
+                        Response.status(Response.Status.NOT_FOUND)
+                                .entity(Map.of("error", throwable.getMessage()))
+                                .build()
+                );
+    }
 }

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  /* Text colors */
+  --color-text-primary: #e4d6a7;
+  --color-text-secondary: #d4b996;
+  --color-text-accent: #e9b44c;
+  --color-text-muted: #a0956b;
+
+  /* Background colors */
+  --color-background-primary: #1c110a;
+  --color-background-secondary: #261a13;
+  --color-background-elevated: #3d2b1f;
+  --color-background-deepest: #0f0a07;
+
+  /* Interactive colors */
+  --color-interactive-gold: #e9b44c;
+  --color-interactive-gold-dark: #c8860d;
+  --color-interactive-gold-light: #f4e8c1;
+
+  /* Cream scale */
+  --color-cream-50: #f4e8c1;
+  --color-cream-100: #e4d6a7;
+  --color-cream-200: #d4b996;
+  --color-cream-300: #a0956b;
+
+  /* Gold scale */
+  --color-gold-400: #e9b44c;
+  --color-gold-500: #c8860d;
+
+  /* Brown scale */
+  --color-brown-800: #3d2b1f;
+  --color-brown-900: #261a13;
+  --color-brown-950: #1c110a;
+  --color-brown-975: #0f0a07;
+
+  /* Optional: Add your font */
+  --font-poppins: Poppins, sans-serif;
+  --font-inknut: "Inknut Antiqua", serif;
+}

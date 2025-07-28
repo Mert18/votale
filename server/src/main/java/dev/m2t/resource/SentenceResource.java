@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Map;
 
-@Path("/sentences")
+@Path("/api/sentences")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SentenceResource {

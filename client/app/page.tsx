@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HomeContent from "../components/HomeContent";
 
 export default function Home() {
@@ -8,8 +8,15 @@ export default function Home() {
 
   const handleGetStarted = () => {
     setShowWelcome(false);
+    localStorage.setItem("welcomeShown", "true");
   };
 
+  useEffect(() => {
+    const welcomeShown = localStorage.getItem("welcomeShown");
+    if (welcomeShown) {
+      setShowWelcome(false);
+    }
+  })
   return (
     <div className="relative overflow-hidden">
       <div

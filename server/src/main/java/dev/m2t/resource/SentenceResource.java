@@ -1,7 +1,5 @@
 package dev.m2t.resource;
 
-import dev.m2t.model.Sentence;
-import dev.m2t.model.Story;
 import dev.m2t.model.dto.CreateSentenceDto;
 import dev.m2t.service.SentenceService;
 import io.smallrye.mutiny.Uni;
@@ -11,7 +9,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.List;
 import java.util.Map;
 
 @Path("/sentences")
@@ -25,18 +22,26 @@ public class SentenceResource {
     @POST
     public Uni<Response> createSentence(CreateSentenceDto sentenceDto) {
         return sentenceService.createSentence(sentenceDto)
-                .map(sentence -> Response.status(Response.Status.CREATED).entity(sentence).build())
-                .onFailure(EntityNotFoundException.class)
-                .recoverWithItem(throwable ->
-                        Response.status(Response.Status.NOT_FOUND)
-                                .entity(Map.of("error", throwable.getMessage()))
-                                .build()
-                );
+            .map(sentence -> Response.status(Response.Status.CREATED).entity(sentence).build())
+            .onFailure(EntityNotFoundException.class)
+            .recoverWithItem(throwable ->
+                    Response.status(Response.Status.NOT_FOUND)
+                            .entity(Map.of("error", throwable.getMessage()))
+                            .build()
+            );
     }
 
     @GET
-    @Path("/{storyId}")
-    public Uni<List<Sentence>> getSentencesByStoryId(@PathParam("storyId") Long storyId) {
-        return sentenceService.getTopVotedSentencesByStoryId(storyId);
+    @Path("/{sentenceId}")
+    public Uni<Response> getNextSentences(@PathParam("sentenceId") Long sentenceId) {
+        return sentenceService.getNextSentences(sentenceId)
+                .map(sentences -> Response.ok(sentences).build());
+    }
+
+    @GET
+    @Path("/first")
+    public Uni<Response> getFirstSentences() {
+        return sentenceService.getFirstSentences()
+                .map(sentences -> Response.ok(sentences).build());
     }
 }

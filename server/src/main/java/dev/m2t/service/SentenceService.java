@@ -1,16 +1,16 @@
 package dev.m2t.service;
 
 import dev.m2t.model.Sentence;
-import dev.m2t.model.Story;
 import dev.m2t.model.dto.CreateSentenceDto;
+import dev.m2t.model.dto.SentenceResponseDto;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class SentenceService {
@@ -20,43 +20,42 @@ public class SentenceService {
 
     @Transactional
     public Uni<Sentence> createSentence(CreateSentenceDto sentenceDto) {
-        return sf.withTransaction((s, t) ->
-                findStoryById(s, sentenceDto.getStoryId())
-                        .chain(story -> persistSentence(s, story, sentenceDto))
-        );
+        if(sentenceDto.getPreviousSentenceId() != null) {
+            return sf.withTransaction((s, t) ->
+                    findSentenceById(s, sentenceDto.getPreviousSentenceId())
+                            .chain(sentence -> persistSentence(s, sentenceDto))
+            );
+        } else {
+            return sf.withTransaction((s, t) -> persistSentence(s, sentenceDto));
+        }
     }
 
-    private Uni<Story> findStoryById(Mutiny.Session session, Long storyId) {
-        return session.find(Story.class, storyId)
-                .onItem().ifNull().failWith(
-                        new EntityNotFoundException("Story not found with id: " + storyId)
-                );
+    private Uni<Sentence> findSentenceById(Mutiny.Session session, Long sentenceId) {
+        if (sentenceId == null) {
+            return Uni.createFrom().nullItem();
+        }
+
+        return session.find(Sentence.class, sentenceId);
     }
 
-    private Uni<Sentence> persistSentence(Mutiny.Session session, Story story, CreateSentenceDto dto) {
+    private Uni<Sentence> persistSentence(Mutiny.Session session, CreateSentenceDto dto) {
         Sentence sentence = new Sentence();
-        sentence.story = story;
-        sentence.order = dto.getOrder();
         sentence.content = dto.getContent();
         sentence.votes = 0L;
         return session.persist(sentence).map(ignored -> sentence);
     }
 
-    public Uni<List<Sentence>> getTopVotedSentencesByStoryId(Long storyId) {
-        return sf.withTransaction((s, t) ->
-                s.createQuery("""
-                SELECT s FROM Sentence s 
-                WHERE s.story.id = :storyId 
-                AND s.votes = (
-                    SELECT MAX(s2.votes) 
-                    FROM Sentence s2 
-                    WHERE s2.story.id = :storyId 
-                    AND s2.order = s.order
-                )
-                ORDER BY s.order
-                """, Sentence.class)
-                        .setParameter("storyId", storyId)
-                        .getResultList()
-        );
+    public Uni<List<Sentence>> getFirstSentences() {
+        return Sentence.find("previousSentence is null order by random()")
+                .page(0, 10)
+                .list();
+    }
+
+    public Uni<List<SentenceResponseDto>> getNextSentences(Long sentenceId) {
+        return Sentence.<Sentence>find("previousSentence.id = ?1 order by votes desc", sentenceId)
+                .list()
+                .map(sentences -> sentences.stream()
+                        .map(SentenceResponseDto::new)
+                        .collect(Collectors.toList()));
     }
 }

@@ -35,6 +35,14 @@
   --color-brown-975: #0f0a07;
 
   /* Optional: Add your font */
-  --font-poppins: Poppins, sans-serif;
+  --font-josefin: "Josefin Sans", sans-serif;
   --font-inknut: "Inknut Antiqua", serif;
+}
+
+* {
+  font-family: var(--font-josefin);
+}
+
+.inknut {
+  font-family: var(--font-inknut);
 }

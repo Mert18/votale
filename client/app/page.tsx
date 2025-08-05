@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import HomeContent from "../components/HomeContent";
+import Link from "next/link";
+import WelcomeContent from "./components/WelcomeContent";
 
 export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
 
   const handleGetStarted = () => {
     setShowWelcome(false);
-    localStorage.setItem("welcomeShown", "true");
+    // localStorage.setItem("welcomeShown", "true");
   };
 
   useEffect(() => {
@@ -16,41 +18,18 @@ export default function Home() {
     if (welcomeShown) {
       setShowWelcome(false);
     }
-  })
+  });
   return (
-    <div className="relative overflow-hidden">
-      <div
-        className={`transition-transform duration-700 ease-in-out ${
-          showWelcome ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <main className="bg-background-primary min-h-screen text-text-primary font-inknut flex flex-col justify-center items-center gap-6">
-          <h1 className="text-2xl font-bold">
-            Welcome to{" "}
-            <span className="text-text-accent font-extrabold">votale</span>
-          </h1>
-          <p className="text-base">where collaborative writings take place.</p>
+    <div className="h-full flex justify-center items-center">
+      {showWelcome ? (
+        <WelcomeContent handleGetStarted={handleGetStarted} />
+      ) : (
+        <HomeContent />
+      )}
 
-          <button
-            onClick={handleGetStarted}
-            className="mt-4 px-8 py-3 bg-interactive-gold hover:bg-interactive-gold-dark text-background-primary font-bold rounded-lg transition-colors duration-200"
-          >
-            Get Started
-          </button>
-        </main>
+      <div className="absolute bottom-4 right-4 text-xs text-text-accent opacity-20">
+        <Link href={"https://github.com/Mert18/votale"}>Github</Link>
       </div>
-
-      <div
-        className={`absolute inset-0 transition-transform duration-700 ease-in-out ${
-          showWelcome ? "translate-x-full" : "translate-x-0"
-        }`}
-      >
-        <main className="bg-background-secondary min-h-screen text-text-primary font-inknut flex flex-col justify-center items-center gap-6">
-          <HomeContent />
-        </main>
-      </div>
-
-      <footer className="absolute bottom-0 left-0 right-0 flex gap-6 flex-wrap items-center justify-center p-4 z-10"></footer>
     </div>
   );
 }

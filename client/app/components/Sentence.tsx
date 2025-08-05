@@ -28,8 +28,15 @@ const Sentence = ({
   }, [lastSentence]);
 
   const handleSentenceSelect = (selectedSentence: Sentence) => {
-    setActiveTale(prev => [...prev, selectedSentence]);
+    setActiveTale((prev) => [...prev, selectedSentence]);
     setLastSentence(selectedSentence);
+  };
+
+  const handleShareYourTale = () => {
+    const taleContent = activeTale
+      .map((sentence) => sentence.content)
+      .join(" ");
+    alert(`Your tale: ${taleContent}`);
   };
 
   return (
@@ -44,10 +51,10 @@ const Sentence = ({
           Go Back
         </button>
       </div>
-      
-      <div className="space-y-4 mb-6">
-        <h3 className="text-lg font-semibold">Your Tale:</h3>
-        <div className="p-4 bg-background-elevated rounded-lg">
+
+      <div>
+        <h3 className="text-gold-400">Your Tale:</h3>
+        <div className="py-4">
           {activeTale.map((sentence, index) => (
             <span key={sentence.id}>
               {sentence.content}
@@ -59,13 +66,13 @@ const Sentence = ({
 
       {nextSentenceOptions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Choose your next sentence:</h3>
-          <div className="space-y-2">
+          <h3 className="text-gold-400">Choose your next sentence:</h3>
+          <div className="space-y-2 flex flex-col justify-start items-start">
             {nextSentenceOptions.map((sentence) => (
               <button
                 key={sentence.id}
                 onClick={() => handleSentenceSelect(sentence)}
-                className="w-full p-4 text-left bg-background-elevated hover:bg-background-hover rounded-lg transition-colors duration-200 cursor-pointer"
+                className="w-full text-left cursor-pointer hover:text-amber-600 transition-colors duration-200"
               >
                 {sentence.content}
               </button>
@@ -75,8 +82,13 @@ const Sentence = ({
       )}
 
       {nextSentenceOptions.length === 0 && lastSentence && (
-        <div className="text-center py-8 text-text-secondary">
-          <p>No more sentence options available. Your tale is complete!</p>
+        <div className="text-center py-8">
+          <p className="text-amber-700">
+            No more sentence options available. Your tale is complete!
+          </p>
+          <button className="cursor-pointer hover:text-amber-600 my-4 transition-colors duration-200" onClick={() => handleShareYourTale()}>
+            Share your tale!
+          </button>
         </div>
       )}
     </div>

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { api } from "../api/api";
 
@@ -34,13 +33,13 @@ const Sentence = ({
   };
 
   return (
-    <div className="py-4">
+    <div>
       <div className="my-4">
         <button
           onClick={() => {
             setSelectedFirstSentence(null);
           }}
-          className="py-2 px-4 text-text-primary cursor-pointer rounded-lg transition-colors duration-200"
+          className="py-2 text-text-primary hover:text-amber-600 cursor-pointer rounded-lg transition-colors duration-200"
         >
           Go Back
         </button>

@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { api } from "../api/api";
 
 interface IFirstSentences {
-  selectedFirstSentence: Sentence | null;
   setSelectedFirstSentence: (sentence: Sentence | null) => void;
 }
 
 const FirstSentences = ({
-  selectedFirstSentence,
   setSelectedFirstSentence,
 }: IFirstSentences) => {
   const [enteredText, setEnteredText] = useState("");
@@ -20,6 +18,10 @@ const FirstSentences = ({
   };
 
   const handleAddNewSentence = () => {
+    if(!enteredText.trim()) {
+      alert("Please enter a sentence.");
+      return;
+    }
     api.post("/api/sentences", { content: enteredText }).then(() => {
       setEnteredText("");
         handleRefresh();
@@ -30,10 +32,10 @@ const FirstSentences = ({
     handleRefresh();
   }, []);
   return (
-    <div className="p-4">
+    <div>
       <button
         onClick={handleRefresh}
-        className="px-4 my-4 flex justify-center items-center cursor-pointer py-2 bg-interactive-gold hover:bg-interactive-gold-dark text-background-primary font-bold rounded-lg transition-colors duration-200"
+        className="px-2 my-4 flex justify-center items-center cursor-pointer py-2 bg-interactive-gold hover:bg-interactive-gold-dark text-background-primary font-bold rounded-lg transition-colors duration-200"
       >
         Refresh
       </button>
@@ -41,12 +43,7 @@ const FirstSentences = ({
         {firstSentences.map((sentence) => (
           <button
             key={sentence.id}
-            className={`p-4 ${
-              selectedFirstSentence != null &&
-              selectedFirstSentence.id === sentence.id
-                ? "bg-amber-900"
-                : "bg-background-elevated"
-            } hover:bg-amber-900 rounded-lg cursor-pointer transition-colors duration-200 border border-yellow-900 w-full flex justify-start items-center`}
+            className={`hover:text-amber-600 rounded-lg cursor-pointer transition-colors duration-200 w-full flex justify-start items-center`}
             onClick={() => setSelectedFirstSentence(sentence)}
           >
             {sentence.content}
@@ -57,14 +54,14 @@ const FirstSentences = ({
       <div className="flexjustify-between items-center my-4">
         <input
           type="text"
-          placeholder="Type your first sentence here..."
+          placeholder="Or type your first sentence here..."
           className="px-4 py-2 border border-amber-600 bg-background-elevated rounded-lg w-full mb-4"
           value={enteredText}
           onChange={(e) => setEnteredText(e.target.value)}
         />
         <button
           onClick={() => handleAddNewSentence()}
-          className="flex justify-center items-center cursor-pointer py-2 font-bold rounded-lg transition-colors duration-200"
+          className="flex hover:text-amber-600 justify-center items-center cursor-pointer py-2 font-bold rounded-lg transition-colors duration-200"
         >
           + New Sentence
         </button>

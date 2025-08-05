@@ -8,14 +8,13 @@ const HomeContent = () => {
     useState<Sentence | null>(null);
 
   return (
-    <div className="bg-background-secondary min-h-screen py-4 text-text-primary font-inknut w-full lg:w-1/2">
-      <Link href={"/"} className="p-4">
+    <div className="bg-background-secondary min-h-screen py-4 text-text-primary font-inknut w-full lg:w-1/2 p-2">
+      <Link href={"/"}>
         <span className="text-text-accent font-extrabold text-2xl">votale</span>
       </Link>
 
       {!selectedFirstSentence ? (
         <FirstSentences
-          selectedFirstSentence={selectedFirstSentence}
           setSelectedFirstSentence={setSelectedFirstSentence}
         />
       ) : (

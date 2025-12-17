@@ -16,6 +16,7 @@ bin/
 
 # IntelliJ
 .idea
+server/.idea
 *.ipr
 *.iml
 *.iws

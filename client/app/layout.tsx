@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 
 const defaultFont = Josefin_Sans({
@@ -25,7 +27,11 @@ export default function RootLayout({
       <body
         className={`${defaultFont.variable} text-sm bg-background-primary text-text-primary h-screen`}
       >
-        {children}
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

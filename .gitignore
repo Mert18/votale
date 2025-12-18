@@ -1,1 +1,4 @@
 .quarkus/
+server/src/main/resources/application.properties
+server/src/main/resources/jwt-key.pem
+server/src/main/resources/jwt-key.pub

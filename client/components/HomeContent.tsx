@@ -8,10 +8,10 @@ const HomeContent = () => {
     useState<Sentence | null>(null);
 
   return (
-    <main className="lg:w-2/5 lg:text-base w-full h-full py-10 px-2">
-      <div className="my-20">
+    <main className="w-full h-full py-10">
+      <div className="mb-12 max-w-5xl mx-auto px-4">
         <Link href={"/"}>
-          <span className="text-text-accent font-extrabold text-xl">
+          <span className="text-text-accent font-extrabold text-2xl">
             votale
           </span>
         </Link>

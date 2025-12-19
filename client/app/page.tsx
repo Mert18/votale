@@ -17,13 +17,19 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end space-x-4">
               <img
                 src={user.pictureUrl}
-                alt={user.name}
-                className="w-8 h-8 rounded-full border border-amber-700/30"
+                alt={""}
+                className="w-8 h-8 rounded-full border-none"
               />
               <span className="text-sm">{user.name}</span>
+              <Link
+                href="/profile"
+                className="text-sm text-text-accent hover:text-amber-600 transition-colors cursor-pointer"
+              >
+                Profile
+              </Link>
               <button
                 onClick={logout}
-                className="text-sm text-text-accent hover:text-amber-600 transition-colors"
+                className="text-sm text-text-accent hover:text-amber-600 transition-colors cursor-pointer"
               >
                 Logout
               </button>

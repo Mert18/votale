@@ -12,6 +12,9 @@ public class Sentence extends PanacheEntity {
 
     public String content;
 
+    @Transient
+    public Long totalPathVotes = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "previous_sentence_id")
     @JsonIgnore
@@ -73,5 +76,14 @@ public class Sentence extends PanacheEntity {
     @JsonProperty("authorId")
     public Long getAuthorId() {
         return author != null ? author.id : null;
+    }
+
+    @JsonProperty("totalPathVotes")
+    public Long getTotalPathVotes() {
+        return totalPathVotes;
+    }
+
+    public void setTotalPathVotes(Long totalPathVotes) {
+        this.totalPathVotes = totalPathVotes;
     }
 }

@@ -7,6 +7,7 @@ public class SentenceResponseDto {
     public Long votes;
     public String content;
     public Long previousSentenceId;
+    public Long childCount;
 
     // Constructor from entity
     public SentenceResponseDto(Sentence sentence) {
@@ -14,5 +15,15 @@ public class SentenceResponseDto {
         this.votes = sentence.votes;
         this.content = sentence.content;
         this.previousSentenceId = sentence.previousSentence != null ? sentence.previousSentence.id : null;
+        this.childCount = 0L;
+    }
+
+    // Constructor with child count
+    public SentenceResponseDto(Sentence sentence, Long childCount) {
+        this.id = sentence.id;
+        this.votes = sentence.votes;
+        this.content = sentence.content;
+        this.previousSentenceId = sentence.previousSentence != null ? sentence.previousSentence.id : null;
+        this.childCount = childCount;
     }
 }

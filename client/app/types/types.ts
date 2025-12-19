@@ -5,6 +5,8 @@ interface Sentence {
   content: string;
   authorName?: string;
   authorId?: string;
+  totalPathVotes?: number;
+  childCount?: number;
 }
 
 interface User {
@@ -17,4 +19,21 @@ interface User {
 interface AuthResponse {
   token: string;
   user: User;
+}
+
+interface StoryStats {
+  id: string;
+  possibleStoryCount: number;
+  calculatedAt: string | null;
+}
+
+interface SavedStory {
+  id: string;
+  userId: string;
+  userName: string;
+  sentenceIds: string[];
+  firstSentenceContent: string;
+  lastSentenceContent: string;
+  pathLength: number;
+  createdAt: string;
 }

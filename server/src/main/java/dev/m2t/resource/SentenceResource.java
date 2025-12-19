@@ -42,8 +42,11 @@ public class SentenceResource {
     @GET
     @Path("/{sentenceId}")
     @RolesAllowed("User")
-    public Uni<Response> getNextSentences(@PathParam("sentenceId") Long sentenceId) {
-        return sentenceService.getNextSentences(sentenceId)
+    public Uni<Response> getNextSentences(
+            @PathParam("sentenceId") Long sentenceId,
+            @QueryParam("sortBy") @DefaultValue("votes") String sortBy,
+            @QueryParam("page") @DefaultValue("0") int page) {
+        return sentenceService.getNextSentences(sentenceId, sortBy, page)
                 .map(sentences -> Response.ok(sentences).build());
     }
 
@@ -52,6 +55,14 @@ public class SentenceResource {
     @RolesAllowed("User")
     public Uni<Response> getFirstSentences() {
         return sentenceService.getFirstSentences()
+                .map(sentences -> Response.ok(sentences).build());
+    }
+
+    @GET
+    @Path("/random-story")
+    @RolesAllowed("User")
+    public Uni<Response> getRandomStory() {
+        return sentenceService.generateRandomStory()
                 .map(sentences -> Response.ok(sentences).build());
     }
 
